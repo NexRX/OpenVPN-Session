@@ -28,10 +28,6 @@ inputs:
     type: string
     description: The (private) ip to ping to check if the connection is up.
     required: true
-  timeout-port:
-    type: string
-    description: The (private) ip's port to use for pini.
-    required: true
   timeout-seconds:
     type: number
     description: A maximum ammount of time in seconds before exiting as a failure due to connection timeout. Default is 180 seconds or 3 minutes
