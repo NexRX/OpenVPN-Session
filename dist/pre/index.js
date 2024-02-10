@@ -25975,8 +25975,8 @@ const autoYes = ['--yes', '--force-yes'];
  * @returns {Promise<void>} Resolves when the action is complete.
  */
 async function run() {
+    core.info('Starting Pre-OpenVPN setup');
     try {
-        core.info('Starting Pre-OpenVPN setup');
         await (0, exec_1.exec)('sudo apt-get', ['update', ...autoYes]);
         await (0, exec_1.exec)('sudo apt-get', [
             'install',
