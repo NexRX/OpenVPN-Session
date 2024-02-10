@@ -37,7 +37,7 @@ export async function run(): Promise<void> {
  * Returning an error if inputs are invalid (or file can't be created).
  * @returns {string} The path to the OpenVPN client file.
  */
-function getClientPath(): string {
+export function getClientPath(): string {
   let client = getInput('ovpn-client')
   if (client) {
     return client
@@ -45,17 +45,20 @@ function getClientPath(): string {
 
   client = getInput('ovpn-client-b64')
   if (client) {
-    const path = '/tmp/client.ovpn'
+    const path = '/tmp'
+    const filename = 'client.ovpn'
+    const filepath = `${path}/${filename}`
     client = b64.decode(client)
 
     try {
-      fs.writeFileSync(path, client, 'utf-8')
+      fs.mkdirSync(path, { recursive: true })
+      fs.writeFileSync(filepath, client, { flag: 'w+', encoding: 'utf8' })
     } catch (error) {
       const msg = match(typeof error)
         .with('string', () => error)
         .with('object', () => {
           const err = error as Record<string, string>
-          return Object.hasOwn(err, 'message') ? err.message : 'Unknown error'
+          return 'message' in err ? err.message : 'Unknown error'
         })
         .otherwise(v => `Unknown error (${v})`)
 
@@ -64,7 +67,7 @@ function getClientPath(): string {
       )
     }
 
-    return path
+    return filepath
   }
 
   throw new Error(
@@ -78,7 +81,7 @@ function getClientPath(): string {
  * @param {number} timeoutSeconds - The timeout in seconds.
  * @returns {Promise<ping.PingResponse>} A promise that resolves if the connection is successful within the timeout, and rejects otherwise.
  */
-async function pingUntilSuccessful(
+export async function pingUntilSuccessful(
   ip: string,
   timeoutSeconds: number
 ): Promise<ping.PingResponse> {
