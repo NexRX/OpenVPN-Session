@@ -1,4 +1,4 @@
-import * as core from '@actions/core'
+import * as pre from '@actions/core'
 import { exec } from '@actions/exec'
 // import { getInput } from './util'
 
@@ -9,7 +9,7 @@ const autoYes = ['--yes', '--force-yes']
  * @returns {Promise<void>} Resolves when the action is complete.
  */
 export async function run(): Promise<void> {
-  core.info('Starting Pre-OpenVPN setup')
+  pre.info('Starting Pre-OpenVPN setup')
   try {
     await exec('sudo apt-get', ['update', ...autoYes])
     await exec('sudo apt-get', [
@@ -18,8 +18,8 @@ export async function run(): Promise<void> {
       '--no-install-recommends',
       ...autoYes
     ])
-    core.info('Pre-OpenVPN setup complete')
+    pre.info('Pre-OpenVPN setup complete')
   } catch (error) {
-    if (error instanceof Error) core.setFailed(error.message)
+    if (error instanceof Error) pre.setFailed(error.message)
   }
 }

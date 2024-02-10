@@ -27566,7 +27566,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.run = void 0;
+exports.pingUntilSuccessful = exports.getClientPath = exports.run = void 0;
 const core = __importStar(__nccwpck_require__(9093));
 const b64 = __importStar(__nccwpck_require__(5452));
 const fs = __importStar(__nccwpck_require__(7561));
@@ -27609,25 +27609,29 @@ function getClientPath() {
     }
     client = (0, util_1.getInput)('ovpn-client-b64');
     if (client) {
-        const path = '/tmp/client.ovpn';
+        const path = '/tmp';
+        const filename = 'client.ovpn';
+        const filepath = `${path}/${filename}`;
         client = b64.decode(client);
         try {
-            fs.writeFileSync(path, client, 'utf-8');
+            fs.mkdirSync(path, { recursive: true });
+            fs.writeFileSync(filepath, client, { flag: 'w+', encoding: 'utf8' });
         }
         catch (error) {
             const msg = (0, ts_pattern_1.match)(typeof error)
                 .with('string', () => error)
                 .with('object', () => {
                 const err = error;
-                return Object.hasOwn(err, 'message') ? err.message : 'Unknown error';
+                return 'message' in err ? err.message : 'Unknown error';
             })
                 .otherwise(v => `Unknown error (${v})`);
             throw new Error(`Error during write for OpenVPN client from Base64: ${msg}`);
         }
-        return path;
+        return filepath;
     }
     throw new Error("No clients were given, must specify either `ovpn-client` or `ovpn-client-b64` in action's inputs");
 }
+exports.getClientPath = getClientPath;
 /**
  * Tries to connect to the given IP and port until successful or until the timeout is reached.
  * @param {string} ip - The IP address to connect to.
@@ -27652,6 +27656,7 @@ async function pingUntilSuccessful(ip, timeoutSeconds) {
     }
     throw new Error(`Timeout reached without a successful connection to ${ip}.`);
 }
+exports.pingUntilSuccessful = pingUntilSuccessful;
 
 
 /***/ }),

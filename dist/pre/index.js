@@ -25966,7 +25966,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.run = void 0;
-const core = __importStar(__nccwpck_require__(9093));
+const pre = __importStar(__nccwpck_require__(9093));
 const exec_1 = __nccwpck_require__(7775);
 // import { getInput } from './util'
 const autoYes = ['--yes', '--force-yes'];
@@ -25975,7 +25975,7 @@ const autoYes = ['--yes', '--force-yes'];
  * @returns {Promise<void>} Resolves when the action is complete.
  */
 async function run() {
-    core.info('Starting Pre-OpenVPN setup');
+    pre.info('Starting Pre-OpenVPN setup');
     try {
         await (0, exec_1.exec)('sudo apt-get', ['update', ...autoYes]);
         await (0, exec_1.exec)('sudo apt-get', [
@@ -25984,11 +25984,11 @@ async function run() {
             '--no-install-recommends',
             ...autoYes
         ]);
-        core.info('Pre-OpenVPN setup complete');
+        pre.info('Pre-OpenVPN setup complete');
     }
     catch (error) {
         if (error instanceof Error)
-            core.setFailed(error.message);
+            pre.setFailed(error.message);
     }
 }
 exports.run = run;
