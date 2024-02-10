@@ -1,11 +1,10 @@
-import core from '@actions/core'
-import b64 from 'js-base64'
-import fs from 'node:fs'
+import * as core from '@actions/core'
+import * as b64 from 'js-base64'
+import * as fs from 'node:fs'
+import * as ping from 'ping'
 import { getInput } from './util'
 import { match } from 'ts-pattern'
 import { exec } from '@actions/exec'
-
-import ping from 'ping'
 
 /**
  * The main function for the action.
