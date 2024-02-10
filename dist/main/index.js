@@ -27654,7 +27654,7 @@ async function pingUntilSuccessful(ip, timeoutSeconds) {
         // Wait for a bit before retrying
         await new Promise(resolve => setTimeout(resolve, 1000));
     }
-    throw new Error(`Timeout reached without a successful connection to ${ip}.`);
+    throw new Error(`Timeout reached without a successful connection to ${ip} after ${timeoutSeconds} seconds.`);
 }
 exports.pingUntilSuccessful = pingUntilSuccessful;
 

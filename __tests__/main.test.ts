@@ -1,7 +1,7 @@
 import * as main from '../src/main'
 
 const failIp = '0.255.4.99'
-const failMessage = `Timeout reached without a successful connection to ${failIp}.`
+const failMessage = `Timeout reached without a successful connection to ${failIp}`
 
 describe('pingUntilSuccessful', () => {
   it('Succeed to example.com', async () => {
@@ -11,6 +11,6 @@ describe('pingUntilSuccessful', () => {
 
   it('Fail to expected ip', async () => {
     const ping = main.pingUntilSuccessful(failIp, 4)
-    await expect(ping).rejects.toThrow(failMessage)
+    await expect(ping).rejects.toThrow(`${failMessage} after ${4} seconds`)
   })
 })
