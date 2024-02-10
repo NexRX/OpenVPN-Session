@@ -1,24 +1,50 @@
-name: 'The name of your action here'
-description: 'Provide a description here'
+name: 'OpenVPN Session'
+description: 'Open a connection to a OpenVPN session for your GitHub Actions'
 author: 'Your name or organization here'
 
-# Add your action's branding here. This will appear on the GitHub Marketplace.
 branding:
   icon: 'heart'
   color: 'red'
 
-# Define your inputs here.
 inputs:
-  milliseconds:
-    description: 'Your input description here'
+  ovpn-client:
+    type: string
+    description: The filepath to a OpenVPN client configuration file in `.ovpn` format. *(Only required if `ovpn-client-b64` is not specifing)*
+    required: false
+  ovpn-client-b64:
+    type: string
+    description: The base64 encoded OpenVPN client configuration file in `.ovpn` format *(Only required if `ovpn-client` is not specifing)*
+    required: false
+  log-save-as:
+    type: string
+    description: Specifiy a name to save the OpenVPN logs as an artifact.
+    required: false
+  log-filepath:
+    type: string
+    description: A path and filename (e.g. `/path/to/file.log`) to save the OpenVPN logs to.
+    required: false
+    default: '/tmp/openvpn.log'
+  timeout-ip:
+    type: string
+    description: The (private) ip to ping to check if the connection is up.
     required: true
-    default: '1000'
+  timeout-port:
+    type: string
+    description: The (private) ip's port to use for pini.
+    required: true
+  timeout-seconds:
+    type: number
+    description: A maximum ammount of time in seconds before exiting as a failure due to connection timeout. Default is 180 seconds or 3 minutes
+    required: false
+    default: '180'
 
-# Define your outputs here.
-outputs:
-  time:
-    description: 'Your output description here'
+# outputs:
+#   pid:
+#     type: string
+#     description: The process ID of the OpenVPN client running the session
 
 runs:
   using: node20
-  main: dist/index.js
+  main: dist/main/index.js
+  post: dist/post/index.js
+  pre: dist/pre/index.js
