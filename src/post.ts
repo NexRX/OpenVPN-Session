@@ -9,8 +9,8 @@ import { DefaultArtifactClient } from '@actions/artifact'
  * @returns {Promise<void>} Resolves when the action is complete.
  */
 export async function run(): Promise<void> {
+  core.info('Beginning post OpenVPN cleanup')
   try {
-    core.info('Beginning post OpenVPN cleanup')
     exec('sudo killall', ['openvpn'])
 
     if (fs.existsSync(getInput('log-filepath'))) {

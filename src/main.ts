@@ -12,8 +12,8 @@ import ping from 'ping'
  * @returns {Promise<void>} Resolves when the action is complete.
  */
 export async function run(): Promise<void> {
+  core.info('Stating OpenVPN connection process')
   try {
-    core.info('Stating OpenVPN connection process')
     const path = getClientPath()
 
     await exec('sudo openvpn', [
