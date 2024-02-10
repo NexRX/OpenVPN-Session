@@ -27559,8 +27559,8 @@ const ping_1 = __importDefault(__nccwpck_require__(8496));
  * @returns {Promise<void>} Resolves when the action is complete.
  */
 async function run() {
+    core_1.default.info('Stating OpenVPN connection process');
     try {
-        core_1.default.info('Stating OpenVPN connection process');
         const path = getClientPath();
         await (0, exec_1.exec)('sudo openvpn', [
             '--config',
