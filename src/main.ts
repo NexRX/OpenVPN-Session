@@ -102,5 +102,7 @@ export async function pingUntilSuccessful(
     await new Promise(resolve => setTimeout(resolve, 1000))
   }
 
-  throw new Error(`Timeout reached without a successful connection to ${ip} after ${timeoutSeconds} seconds.`)
+  throw new Error(
+    `Timeout reached without a successful connection to ${ip} after ${timeoutSeconds} seconds.`
+  )
 }
