@@ -1,6 +1,6 @@
 import * as core from '@actions/core'
+import * as fs from 'node:fs'
 import { exec } from '@actions/exec'
-import fs from 'node:fs'
 import { getInput } from './util'
 import { DefaultArtifactClient } from '@actions/artifact'
 

@@ -27542,24 +27542,44 @@ exports["default"] = _default;
 
 "use strict";
 
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.run = void 0;
-const core_1 = __importDefault(__nccwpck_require__(9093));
-const js_base64_1 = __importDefault(__nccwpck_require__(5452));
-const node_fs_1 = __importDefault(__nccwpck_require__(7561));
+const core = __importStar(__nccwpck_require__(9093));
+const b64 = __importStar(__nccwpck_require__(5452));
+const fs = __importStar(__nccwpck_require__(7561));
+const ping = __importStar(__nccwpck_require__(8496));
 const util_1 = __nccwpck_require__(8438);
 const ts_pattern_1 = __nccwpck_require__(4502);
 const exec_1 = __nccwpck_require__(7775);
-const ping_1 = __importDefault(__nccwpck_require__(8496));
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
  */
 async function run() {
-    core_1.default.info('Stating OpenVPN connection process');
+    core.info('Stating OpenVPN connection process');
     try {
         const path = getClientPath();
         await (0, exec_1.exec)('sudo openvpn', [
@@ -27573,7 +27593,7 @@ async function run() {
     }
     catch (error) {
         if (error instanceof Error)
-            core_1.default.setFailed(error.message);
+            core.setFailed(error.message);
     }
 }
 exports.run = run;
@@ -27590,9 +27610,9 @@ function getClientPath() {
     client = (0, util_1.getInput)('ovpn-client-b64');
     if (client) {
         const path = '/tmp/client.ovpn';
-        client = js_base64_1.default.decode(client);
+        client = b64.decode(client);
         try {
-            node_fs_1.default.writeFileSync(path, client, 'utf-8');
+            fs.writeFileSync(path, client, 'utf-8');
         }
         catch (error) {
             const msg = (0, ts_pattern_1.match)(typeof error)
@@ -27619,7 +27639,7 @@ async function pingUntilSuccessful(ip, timeoutSeconds) {
     const startTime = Date.now();
     while (Date.now() - startTime < timeoutMillis) {
         try {
-            const res = await ping_1.default.promise.probe(ip);
+            const res = await ping.promise.probe(ip);
             if (res.alive) {
                 return res; // If the host is reachable, return the ping response
             }
