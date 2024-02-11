@@ -10,7 +10,7 @@ describe('pingUntilSuccessful', () => {
   })
 
   it('Fail to expected ip', async () => {
-    const ping = main.pingUntilSuccessful(failIp, 4)
+    const ping = main.pingUntilSuccessful(failIp, 3)
     await expect(ping).rejects.toThrow(`${failMessage} after ${4} seconds`)
   })
 })
