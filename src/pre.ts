@@ -1,6 +1,6 @@
 import * as core from '@actions/core'
 import { exec } from '@actions/exec'
-import { errorToMessage } from './util.js'
+import { errorToMessage } from './util'
 // import { getInput } from './util'
 
 const autoYes = ['--yes', '--force-yes']
@@ -19,8 +19,8 @@ export async function run(): Promise<void> {
       '--no-install-recommends',
       ...autoYes
     ])
-    core.info('Pre-OpenVPN setup complete')
+    return core.info('Pre-OpenVPN setup complete')
   } catch (error) {
-    core.setFailed(errorToMessage(error))
+    return core.setFailed(errorToMessage(error))
   }
 }

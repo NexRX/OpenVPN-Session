@@ -1,10 +1,12 @@
 /// <reference types="vitest" />
-import { configDefaults, defineConfig } from 'vitest/config'
+import { defineConfig } from 'vitest/config'
+import { viteRequire } from 'vite-require'
 
 export default defineConfig({
   esbuild: {
     target: 'node20'
   },
+  plugins: [viteRequire()],
   test: {
     include: ['**/*.test.ts'],
     environment: 'node',

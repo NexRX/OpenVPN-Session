@@ -1,161 +1,160 @@
-import * as main from '../src/main.js'
-import * as core from '@actions/core'
-import * as exec from '@actions/exec'
+import {
+  setupFsMock,
+  resetAllMocks,
+  setupExecMock,
+  setupCoreMock,
+  probeRes,
+  setupPingMock
+} from './mocking.test'
+import * as main from '../src/main'
 import * as b64 from 'js-base64'
-import { promise as ping } from 'ping'
-import { promises as fs } from 'fs'
+import { defaultInputs } from './utils.test'
 
-let mockGetInput = vi.spyOn(core, 'getInput')
-let mockSetFailed = vi.spyOn(core, 'setFailed')
+const fs = setupFsMock()
+const exec = setupExecMock().exec
+const core = setupCoreMock()
+const ping = setupPingMock().probe
 
-let mockExec = vi.spyOn(exec, 'exec')
+describe('Action Main', () => {
+  beforeEach(resetAllMocks)
 
-let mockMkDir = vi.spyOn(fs, 'mkdir')
-let mockWriteFile = vi.spyOn(fs, 'writeFile')
+  it('should finish for inputs default', async () => {
+    core.getInput.mockImplementation(defaultInputs)
 
-function reset() {
-  mockGetInput.mockReset()
-  mockSetFailed.mockReset()
-
-  mockExec.mockReset()
-
-  mockMkDir.mockReset()
-  mockWriteFile.mockReset()
-}
-
-describe('main run', () => {
-  beforeEach(reset)
-
-  it('succeeds with client path & defaults', async () => {
-    mockGetInput.mockImplementation((name, option) => {
-      if (name === 'ovpn-client') return 'path'
-      if (name === 'timeout-address' && option?.required) return 'example.com'
-      return ''
+    ping.mockResolvedValueOnce({
+      ...probeRes,
+      alive: true
     })
 
-    await expect(main.run).not.toThrow()
-    expect(mockGetInput).toHaveBeenCalledWith('ovpn-client')
-    expect(mockGetInput).toHaveBeenCalledWith('log-filepath')
-    expect(mockExec).toHaveBeenCalledWith('sudo openvpn', [
+    await main.run()
+    expect(core.info).toBeCalledWith('Stating OpenVPN connection process')
+    expect(exec).toBeCalledWith('sudo openvpn', [
       '--config',
-      'path',
+      'client.ovpn',
+      '--log',
+      '/tmp/log.txt',
+      '--daemon'
+    ])
+    expect(core.getInput).toBeCalledWith('timeout-address', { required: true })
+    expect(core.getInput).toBeCalledWith('timeout-seconds')
+    expect(core.setFailed).not.toBeCalled()
+  })
+
+  it('should finish with defaults and no log file', async () => {
+    core.getInput.mockImplementation((name: string) => {
+      if (name === "log-filepath") return ""
+      return defaultInputs(name)
+    })
+
+    ping.mockResolvedValueOnce({
+      ...probeRes,
+      alive: true
+    })
+
+    await main.run()
+    expect(core.info).toBeCalledWith('Stating OpenVPN connection process')
+    expect(exec).toBeCalledWith('sudo openvpn', [
+      '--config',
+      'client.ovpn',
       '--log',
       '/tmp/openvpn.log',
       '--daemon'
     ])
+    expect(core.getInput).toBeCalledWith('timeout-address', { required: true })
+    expect(core.getInput).toBeCalledWith('timeout-seconds')
+    expect(core.setFailed).not.toBeCalled()
   })
 
-  it('handles failures (error)', async () => {
-    mockGetInput.mockImplementation((name, option) => {
-      if (name === 'ovpn-client-b64') return b64.encode('client')
-      if (name === 'timeout-address' && option?.required) return 'example.com'
-      return ''
-    })
-    mockExec.mockRejectedValue(new Error('message'))
-
-    await expect(main.run).not.toThrow()
-    expect(mockGetInput).toHaveBeenCalledWith('ovpn-client-b64')
-  })
-
-  it('handles failures (error string)', async () => {
-    mockGetInput.mockImplementation((name, option) => {
-      if (name === 'ovpn-client-b64') return b64.encode('client')
-      if (name === 'timeout-address' && option?.required) return 'example.com'
-      return ''
-    })
-    mockExec.mockRejectedValue('error')
-
-    await expect(main.run).not.toThrow()
-    expect(mockGetInput).toHaveBeenCalledWith('ovpn-client-b64')
-  })
-
-  it('handles failures (error unknown)', async () => {
-    mockGetInput.mockImplementation((name, option) => {
-      if (name === 'ovpn-client-b64') return b64.encode('client')
-      if (name === 'timeout-address' && option?.required) return 'example.com'
-      return ''
-    })
-    mockExec.mockRejectedValue({})
-
-    await expect(main.run).not.toThrow()
-    expect(mockGetInput).toHaveBeenCalledWith('ovpn-client-b64')
-  })
-})
-
-describe('getClientPath', () => {
-  beforeEach(reset)
-
-  it('returns input path', async () => {
-    mockGetInput.mockImplementation((name: string) => {
-      if (name === 'ovpn-client') return 'path'
-      return ''
-    })
-    const path = await main.getClientPath()
-    expect(path).toBe('path')
-    expect(mockGetInput).toHaveBeenCalledWith('ovpn-client')
-    expect(mockWriteFile).toHaveBeenCalledTimes(0)
-  })
-
-  it('creates client from base64', async () => {
-    const decoded = 'base64'
+  it('should create client from base64', async () => {
+    const decoded = 'client file contents \n with new lines'
     const encoded = b64.encode(decoded)
-    mockGetInput.mockImplementation((name: string) => {
-      if (name === 'ovpn-client-b64') return encoded
-      return ''
+    core.getInput.mockImplementation((name: string) => {
+      switch (name) {
+        case 'ovpn-client-b64':
+          return encoded
+        case 'ovpn-client':
+          return ''
+        default:
+          return defaultInputs(name)
+      }
     })
-    const path = await main.getClientPath()
-    expect(path).toBe('/tmp/client.ovpn')
-    expect(mockGetInput).toHaveBeenCalledWith('ovpn-client-b64')
-    expect(mockWriteFile).toHaveBeenCalledWith('/tmp/client.ovpn', decoded, {
-      flag: 'w+',
-      encoding: 'utf8'
-    })
+    fs.promises.mkdir.mockResolvedValue(true)
+    fs.promises.writeFile.mockResolvedValue(true)
+
+    expect(await main.getClientPath()).toBe('/tmp/client.ovpn')
+    expect(core.getInput).toBeCalledWith('ovpn-client-b64')
+    expect(fs.promises.writeFile).toHaveBeenCalledWith(
+      '/tmp/client.ovpn',
+      decoded,
+      { flag: 'w+', encoding: 'utf8' }
+    )
   })
 
-  it('handles base 64 error', async () => {
-    const decoded = 'base64'
+  it('should create client from base64', async () => {
+    const decoded = 'client file contents \n with new lines'
     const encoded = b64.encode(decoded)
-    mockGetInput.mockImplementation((name: string) => {
-      if (name === 'ovpn-client-b64') return encoded
-      return ''
+    core.getInput.mockImplementation((name: string) => {
+      switch (name) {
+        case 'ovpn-client-b64':
+          return encoded
+        case 'ovpn-client':
+          return ''
+        default:
+          return defaultInputs(name)
+      }
     })
-    mockWriteFile.mockRejectedValue('error')
+    fs.promises.mkdir.mockRejectedValueOnce(new Error('MkDir error'))
 
-    expect(main.getClientPath).rejects.toThrow('error')
+    await expect(main.getClientPath()).rejects.toThrowError(
+      'Error during write for OpenVPN client from Base64: MkDir error'
+    )
   })
 
-  it('handles no input', async () => {
-    mockGetInput.mockImplementation((name: string) => {
-      return ''
-    })
+  it('should create client from base64', async () => {
+    core.getInput.mockReturnValue('')
+    fs.promises.mkdir.mockRejectedValueOnce(new Error('MkDir error'))
 
-    await expect(main.getClientPath).rejects.toThrow(
+    await expect(main.getClientPath()).rejects.toThrowError(
       "No clients were given, must specify either `ovpn-client` or `ovpn-client-b64` in action's inputs"
     )
   })
-})
 
-const failIp = '0.255.4.99'
-const failMessage = `Timeout reached without a successful connection to ${failIp}`
+  it('should handle ping error', async () => {
+    core.getInput.mockImplementation(defaultInputs)
 
-describe('pingUntilSuccessful', () => {
-  beforeEach(reset)
+    ping
+      .mockResolvedValueOnce({
+        ...probeRes,
+        alive: false
+      })
+      .mockRejectedValueOnce(new Error('Timeout'))
+      .mockResolvedValueOnce({
+        ...probeRes,
+        alive: false
+      })
+      .mockResolvedValueOnce({
+        ...probeRes,
+        alive: true
+      })
 
-  it('Succeed to example.com', async () => {
-    const ping = await main.pingUntilSuccessful('example.com', 6) // 6 because jest 5s timeout
-    expect(ping.alive).toBe(true)
+    await expect(main.run()).resolves.toBeFalsy()
+    expect(core.info).toBeCalled()
+    expect(exec).toBeCalled()
+    expect(core.setFailed).not.toHaveBeenCalled()
+    expect(ping).toBeCalledTimes(4)
   })
 
-  it('Fail to expected ip', async () => {
-    const ping = main.pingUntilSuccessful(failIp, 3)
-    await expect(ping).rejects.toThrow(`${failMessage} after ${3} seconds`)
-  })
+  it('should handle ping error + timeout', async () => {
+    core.getInput.mockImplementation((name: string) => {
+        if (name === "timeout-seconds") return 4
+        return defaultInputs(name)
+    })
+    ping.mockRejectedValueOnce(new Error('Timeout'))
+    exec.mockReturnValue(0)
 
-  it('Handles probe error', async () => {
-    let mockProbe = vi.spyOn(ping, 'probe')
-    mockProbe.mockRejectedValueOnce(new Error('error'))
-    const doPing = main.pingUntilSuccessful(failIp, 1)
-    await expect(doPing).rejects.toThrow(`${failMessage} after ${1} seconds`)
-    mockProbe.mockRestore() // THis will cause more problems if this test fails
+    await expect(main.run()).resolves.toBeFalsy()
+    expect(core.info).toBeCalled()
+    expect(exec).toBeCalled()
+    expect(core.setFailed).toHaveBeenCalledOnce()
   })
 })

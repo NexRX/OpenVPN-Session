@@ -1,7 +1,7 @@
 import * as core from '@actions/core'
 import { existsSync } from 'fs'
 import { exec } from '@actions/exec'
-import { errorToMessage, getInput } from './util.js'
+import { errorToMessage, getInput } from './util'
 import { DefaultArtifactClient } from '@actions/artifact'
 
 /**

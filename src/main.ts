@@ -1,9 +1,8 @@
 import * as core from '@actions/core'
 import * as b64 from 'js-base64'
-import { promises as fs } from 'fs'
 import * as ping from 'ping'
-import { errorToMessage, getInput } from './util.js'
-import { match } from 'ts-pattern'
+import { promises as fs } from 'fs'
+import { errorToMessage, getInput } from './util'
 import { exec } from '@actions/exec'
 
 /**
@@ -42,16 +41,16 @@ export async function getClientPath(): Promise<string> {
     return client
   }
 
-  client = getInput('ovpn-client-b64')
-  if (client) {
+  const encodedClient = getInput('ovpn-client-b64')
+  console.log('encodedClient:', encodedClient)
+  if (encodedClient) {
     const path = '/tmp'
-    const filename = 'client.ovpn'
-    const filepath = `${path}/${filename}`
-    client = b64.decode(client)
+    const filepath = `${path}/client.ovpn`
+    const decoded = b64.decode(encodedClient)
 
     try {
       await fs.mkdir(path, { recursive: true })
-      await fs.writeFile(filepath, client, { flag: 'w+', encoding: 'utf8' })
+      await fs.writeFile(filepath, decoded, { flag: 'w+', encoding: 'utf8' })
     } catch (error) {
       const msg = errorToMessage(error)
 
@@ -89,11 +88,11 @@ export async function pingUntilSuccessful(
         return res
       }
     } catch (error) {
-      console.error(`Connection/Ping to ${addr} failed:`, error)
+      console.error(`Connection/Ping to ${addr} failed but retrying:`, error)
     }
 
     // Wait for a bit before retrying
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    await new Promise(resolve => setTimeout(resolve, 250))
   }
 
   throw new Error(
