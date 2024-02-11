@@ -1,8 +1,8 @@
 import * as core from '@actions/core'
 import * as b64 from 'js-base64'
-import * as fs from 'node:fs'
+import { promises as fs } from 'fs';
 import * as ping from 'ping'
-import { getInput } from './util'
+import { getInput } from './util.js'
 import { match } from 'ts-pattern'
 import { exec } from '@actions/exec'
 
@@ -17,7 +17,7 @@ export async function run(): Promise<void> {
 
     await exec('sudo openvpn', [
       '--config',
-      path,
+      await path,
       '--log',
       getInput('log-filepath'),
       '--daemon'
@@ -37,7 +37,7 @@ export async function run(): Promise<void> {
  * Returning an error if inputs are invalid (or file can't be created).
  * @returns {string} The path to the OpenVPN client file.
  */
-export function getClientPath(): string {
+export async function getClientPath(): Promise<string> {
   let client = getInput('ovpn-client')
   if (client) {
     return client
@@ -51,8 +51,8 @@ export function getClientPath(): string {
     client = b64.decode(client)
 
     try {
-      fs.mkdirSync(path, { recursive: true })
-      fs.writeFileSync(filepath, client, { flag: 'w+', encoding: 'utf8' })
+      await fs.mkdir(path, { recursive: true })
+      await fs.writeFile(filepath, client, { flag: 'w+', encoding: 'utf8' })
     } catch (error) {
       const msg = match(typeof error)
         .with('string', () => error)

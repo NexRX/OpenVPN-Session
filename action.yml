@@ -9,28 +9,28 @@ branding:
 inputs:
   ovpn-client:
     type: string
-    description: The filepath to a OpenVPN client configuration file in `.ovpn` format. *(Only required if `ovpn-client-b64` is not specifing)*
+    description: Filepath to a `.ovpn` client [required or `ovpn-client-b64`]
     required: false
   ovpn-client-b64:
     type: string
-    description: The base64 encoded OpenVPN client configuration file in `.ovpn` format *(Only required if `ovpn-client` is not specifing)*
+    description: Base64 `.ovpn` file contents [required or `ovpn-client`]
     required: false
   log-save-as:
     type: string
-    description: Specifiy a name to save the OpenVPN logs as an artifact.
+    description: Specifiy a name to save the OpenVPN logs as an artifact
     required: false
   log-filepath:
     type: string
-    description: A path and filename (e.g. `/path/to/file.log`) to save the OpenVPN logs to.
+    description: Filepath for saving the OpenVPN logs to
     required: false
     default: '/tmp/openvpn.log'
   timeout-address:
     type: string
-    description: The (private) hostname or ip to ping to check if the connection is up.
+    description: The (private) hostname or ip for timeout testing connection to
     required: true
   timeout-seconds:
     type: number
-    description: A maximum ammount of time in seconds before exiting as a failure due to connection timeout. Default is 180 seconds or 3 minutes
+    description: Seconds before assuming the session & connection has failed
     required: false
     default: 180
 
