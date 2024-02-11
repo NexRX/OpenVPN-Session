@@ -27700,7 +27700,7 @@ function getInput(name) {
         .with(ts_pattern_1.P.union('ovpn-client', 'ovpn-client-b64', 'log-save-as'), n => core.getInput(n) || undefined)
         .with('log-filepath', n => core.getInput(n) || '/tmp/openvpn.log')
         .with('timeout-ip', n => core.getInput(n, { required: true }))
-        .with('timeout-seconds', n => parseInt(core.getInput(n) || '180', 1))
+        .with('timeout-seconds', n => parseInt(core.getInput(n) || '180'))
         .exhaustive();
 }
 exports.getInput = getInput;
