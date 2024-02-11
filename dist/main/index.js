@@ -27589,7 +27589,7 @@ async function run() {
             (0, util_1.getInput)('log-filepath'),
             '--daemon'
         ]);
-        await pingUntilSuccessful((0, util_1.getInput)('timeout-ip'), (0, util_1.getInput)('timeout-seconds'));
+        await pingUntilSuccessful((0, util_1.getInput)('timeout-address'), (0, util_1.getInput)('timeout-seconds'));
     }
     catch (error) {
         if (error instanceof Error)
@@ -27633,29 +27633,29 @@ function getClientPath() {
 }
 exports.getClientPath = getClientPath;
 /**
- * Tries to connect to the given IP and port until successful or until the timeout is reached.
+ * Tries to connect to the given address and port until successful or until the timeout is reached.
  * @param {string} ip - The IP address to connect to.
  * @param {number} timeoutSeconds - The timeout in seconds.
  * @returns {Promise<ping.PingResponse>} A promise that resolves if the connection is successful within the timeout, and rejects otherwise.
  */
-async function pingUntilSuccessful(ip, timeoutSeconds) {
+async function pingUntilSuccessful(addr, timeoutSeconds) {
     const timeoutMillis = timeoutSeconds * 1000;
     const startTime = Date.now();
     while (Date.now() - startTime < timeoutMillis) {
         try {
-            const res = await ping.promise.probe(ip);
+            const res = await ping.promise.probe(addr);
             if (res.alive) {
-                console.log(`Connection/Ping to ${ip} confirmed as successful:`, res);
+                console.log(`Connection/Ping to ${addr} confirmed as successful:`, res);
                 return res;
             }
         }
         catch (error) {
-            console.error(`Connection/Ping to ${ip} failed:`, error);
+            console.error(`Connection/Ping to ${addr} failed:`, error);
         }
         // Wait for a bit before retrying
         await new Promise(resolve => setTimeout(resolve, 1000));
     }
-    throw new Error(`Timeout reached without a successful connection to ${ip} after ${timeoutSeconds} seconds.`);
+    throw new Error(`Timeout reached without a successful connection to ${addr} after ${timeoutSeconds} seconds.`);
 }
 exports.pingUntilSuccessful = pingUntilSuccessful;
 
@@ -27700,7 +27700,7 @@ function getInput(name) {
     return (0, ts_pattern_1.match)(name)
         .with(ts_pattern_1.P.union('ovpn-client', 'ovpn-client-b64', 'log-save-as'), n => core.getInput(n) || undefined)
         .with('log-filepath', n => core.getInput(n) || '/tmp/openvpn.log')
-        .with('timeout-ip', n => core.getInput(n, { required: true }))
+        .with('timeout-address', n => core.getInput(n, { required: true }))
         .with('timeout-seconds', n => parseInt(core.getInput(n) || '180'))
         .exhaustive();
 }

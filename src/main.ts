@@ -24,7 +24,7 @@ export async function run(): Promise<void> {
     ])
 
     await pingUntilSuccessful(
-      getInput('timeout-ip'),
+      getInput('timeout-address'),
       getInput('timeout-seconds')
     )
   } catch (error) {
@@ -76,13 +76,13 @@ export function getClientPath(): string {
 }
 
 /**
- * Tries to connect to the given IP and port until successful or until the timeout is reached.
+ * Tries to connect to the given address and port until successful or until the timeout is reached.
  * @param {string} ip - The IP address to connect to.
  * @param {number} timeoutSeconds - The timeout in seconds.
  * @returns {Promise<ping.PingResponse>} A promise that resolves if the connection is successful within the timeout, and rejects otherwise.
  */
 export async function pingUntilSuccessful(
-  ip: string,
+  addr: string,
   timeoutSeconds: number
 ): Promise<ping.PingResponse> {
   const timeoutMillis = timeoutSeconds * 1000
@@ -90,13 +90,13 @@ export async function pingUntilSuccessful(
 
   while (Date.now() - startTime < timeoutMillis) {
     try {
-      const res = await ping.promise.probe(ip)
+      const res = await ping.promise.probe(addr)
       if (res.alive) {
-        console.log(`Connection/Ping to ${ip} confirmed as successful:`, res)
+        console.log(`Connection/Ping to ${addr} confirmed as successful:`, res)
         return res
       }
     } catch (error) {
-      console.error(`Connection/Ping to ${ip} failed:`, error)
+      console.error(`Connection/Ping to ${addr} failed:`, error)
     }
 
     // Wait for a bit before retrying
@@ -104,6 +104,6 @@ export async function pingUntilSuccessful(
   }
 
   throw new Error(
-    `Timeout reached without a successful connection to ${ip} after ${timeoutSeconds} seconds.`
+    `Timeout reached without a successful connection to ${addr} after ${timeoutSeconds} seconds.`
   )
 }

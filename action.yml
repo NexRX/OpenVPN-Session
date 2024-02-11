@@ -24,9 +24,9 @@ inputs:
     description: A path and filename (e.g. `/path/to/file.log`) to save the OpenVPN logs to.
     required: false
     default: '/tmp/openvpn.log'
-  timeout-ip:
+  timeout-address:
     type: string
-    description: The (private) ip to ping to check if the connection is up.
+    description: The (private) hostname or ip to ping to check if the connection is up.
     required: true
   timeout-seconds:
     type: number
