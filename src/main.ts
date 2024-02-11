@@ -92,7 +92,8 @@ export async function pingUntilSuccessful(
     try {
       const res = await ping.promise.probe(ip)
       if (res.alive) {
-        return res // If the host is reachable, return the ping response
+        console.log(`Connection/Ping to ${ip} confirmed as successful:`, res)
+        return res
       }
     } catch (error) {
       console.error(`Connection/Ping to ${ip} failed:`, error)
