@@ -1,3 +1,4 @@
+import { createRequire as __WEBPACK_EXTERNAL_createRequire } from "module";
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
@@ -27569,10 +27570,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.pingUntilSuccessful = exports.getClientPath = exports.run = void 0;
 const core = __importStar(__nccwpck_require__(9093));
 const b64 = __importStar(__nccwpck_require__(5452));
-const fs = __importStar(__nccwpck_require__(7561));
 const ping = __importStar(__nccwpck_require__(8496));
+const fs_1 = __nccwpck_require__(7147);
 const util_1 = __nccwpck_require__(8438);
-const ts_pattern_1 = __nccwpck_require__(4502);
 const exec_1 = __nccwpck_require__(7775);
 /**
  * The main function for the action.
@@ -27584,16 +27584,17 @@ async function run() {
         const path = getClientPath();
         await (0, exec_1.exec)('sudo openvpn', [
             '--config',
-            path,
+            await path,
             '--log',
             (0, util_1.getInput)('log-filepath'),
             '--daemon'
         ]);
-        await pingUntilSuccessful((0, util_1.getInput)('timeout-ip'), (0, util_1.getInput)('timeout-seconds'));
+        const addr = (0, util_1.getInput)('timeout-address');
+        const timeout = (0, util_1.getInput)('timeout-seconds');
+        await pingUntilSuccessful(addr, timeout);
     }
     catch (error) {
-        if (error instanceof Error)
-            core.setFailed(error.message);
+        core.setFailed((0, util_1.errorToMessage)(error));
     }
 }
 exports.run = run;
@@ -27602,29 +27603,23 @@ exports.run = run;
  * Returning an error if inputs are invalid (or file can't be created).
  * @returns {string} The path to the OpenVPN client file.
  */
-function getClientPath() {
+async function getClientPath() {
     let client = (0, util_1.getInput)('ovpn-client');
     if (client) {
         return client;
     }
-    client = (0, util_1.getInput)('ovpn-client-b64');
-    if (client) {
+    const encodedClient = (0, util_1.getInput)('ovpn-client-b64');
+    console.log('encodedClient:', encodedClient);
+    if (encodedClient) {
         const path = '/tmp';
-        const filename = 'client.ovpn';
-        const filepath = `${path}/${filename}`;
-        client = b64.decode(client);
+        const filepath = `${path}/client.ovpn`;
+        const decoded = b64.decode(encodedClient);
         try {
-            fs.mkdirSync(path, { recursive: true });
-            fs.writeFileSync(filepath, client, { flag: 'w+', encoding: 'utf8' });
+            await fs_1.promises.mkdir(path, { recursive: true });
+            await fs_1.promises.writeFile(filepath, decoded, { flag: 'w+', encoding: 'utf8' });
         }
         catch (error) {
-            const msg = (0, ts_pattern_1.match)(typeof error)
-                .with('string', () => error)
-                .with('object', () => {
-                const err = error;
-                return 'message' in err ? err.message : 'Unknown error';
-            })
-                .otherwise(v => `Unknown error (${v})`);
+            const msg = (0, util_1.errorToMessage)(error);
             throw new Error(`Error during write for OpenVPN client from Base64: ${msg}`);
         }
         return filepath;
@@ -27633,28 +27628,29 @@ function getClientPath() {
 }
 exports.getClientPath = getClientPath;
 /**
- * Tries to connect to the given IP and port until successful or until the timeout is reached.
+ * Tries to connect to the given address and port until successful or until the timeout is reached.
  * @param {string} ip - The IP address to connect to.
  * @param {number} timeoutSeconds - The timeout in seconds.
  * @returns {Promise<ping.PingResponse>} A promise that resolves if the connection is successful within the timeout, and rejects otherwise.
  */
-async function pingUntilSuccessful(ip, timeoutSeconds) {
+async function pingUntilSuccessful(addr, timeoutSeconds) {
     const timeoutMillis = timeoutSeconds * 1000;
     const startTime = Date.now();
     while (Date.now() - startTime < timeoutMillis) {
         try {
-            const res = await ping.promise.probe(ip);
+            const res = await ping.promise.probe(addr);
             if (res.alive) {
-                return res; // If the host is reachable, return the ping response
+                console.log(`Connection/Ping to ${addr} confirmed as successful:`, res);
+                return res;
             }
         }
         catch (error) {
-            console.error(`Connection/Ping to ${ip} failed:`, error);
+            console.error(`Connection/Ping to ${addr} failed but retrying:`, error);
         }
         // Wait for a bit before retrying
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, 250));
     }
-    throw new Error(`Timeout reached without a successful connection to ${ip}.`);
+    throw new Error(`Timeout reached without a successful connection to ${addr} after ${timeoutSeconds} seconds.`);
 }
 exports.pingUntilSuccessful = pingUntilSuccessful;
 
@@ -27690,7 +27686,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getInput = void 0;
+exports.errorToMessage = exports.getInput = void 0;
 const core = __importStar(__nccwpck_require__(9093));
 const ts_pattern_1 = __nccwpck_require__(4502);
 /** Returns a parsed (If needed) value of the types with the correct type */
@@ -27699,11 +27695,19 @@ function getInput(name) {
     return (0, ts_pattern_1.match)(name)
         .with(ts_pattern_1.P.union('ovpn-client', 'ovpn-client-b64', 'log-save-as'), n => core.getInput(n) || undefined)
         .with('log-filepath', n => core.getInput(n) || '/tmp/openvpn.log')
-        .with('timeout-ip', n => core.getInput(n, { required: true }))
-        .with('timeout-seconds', n => parseInt(core.getInput(n) || '180', 1))
+        .with('timeout-address', n => core.getInput(n, { required: true }))
+        .with('timeout-seconds', n => parseInt(core.getInput(n) || '180'))
         .exhaustive();
 }
 exports.getInput = getInput;
+function errorToMessage(error) {
+    if (error instanceof Error)
+        return error.message;
+    if (typeof error === 'string')
+        return error;
+    return 'Unknown Error';
+}
+exports.errorToMessage = errorToMessage;
 
 
 /***/ }),
@@ -27712,7 +27716,7 @@ exports.getInput = getInput;
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("assert");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("assert");
 
 /***/ }),
 
@@ -27720,7 +27724,7 @@ module.exports = require("assert");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("async_hooks");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("async_hooks");
 
 /***/ }),
 
@@ -27728,7 +27732,7 @@ module.exports = require("async_hooks");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("buffer");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("buffer");
 
 /***/ }),
 
@@ -27736,7 +27740,7 @@ module.exports = require("buffer");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("child_process");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("child_process");
 
 /***/ }),
 
@@ -27744,7 +27748,7 @@ module.exports = require("child_process");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("console");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("console");
 
 /***/ }),
 
@@ -27752,7 +27756,7 @@ module.exports = require("console");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("crypto");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("crypto");
 
 /***/ }),
 
@@ -27760,7 +27764,7 @@ module.exports = require("crypto");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("diagnostics_channel");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("diagnostics_channel");
 
 /***/ }),
 
@@ -27768,7 +27772,7 @@ module.exports = require("diagnostics_channel");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("events");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("events");
 
 /***/ }),
 
@@ -27776,7 +27780,7 @@ module.exports = require("events");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("fs");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("fs");
 
 /***/ }),
 
@@ -27784,7 +27788,7 @@ module.exports = require("fs");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("http");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("http");
 
 /***/ }),
 
@@ -27792,7 +27796,7 @@ module.exports = require("http");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("http2");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("http2");
 
 /***/ }),
 
@@ -27800,7 +27804,7 @@ module.exports = require("http2");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("https");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("https");
 
 /***/ }),
 
@@ -27808,7 +27812,7 @@ module.exports = require("https");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("net");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("net");
 
 /***/ }),
 
@@ -27816,15 +27820,7 @@ module.exports = require("net");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("node:events");
-
-/***/ }),
-
-/***/ 7561:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("node:fs");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:events");
 
 /***/ }),
 
@@ -27832,7 +27828,7 @@ module.exports = require("node:fs");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("node:stream");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:stream");
 
 /***/ }),
 
@@ -27840,7 +27836,7 @@ module.exports = require("node:stream");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("node:util");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:util");
 
 /***/ }),
 
@@ -27848,7 +27844,7 @@ module.exports = require("node:util");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("os");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("os");
 
 /***/ }),
 
@@ -27856,7 +27852,7 @@ module.exports = require("os");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("path");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("path");
 
 /***/ }),
 
@@ -27864,7 +27860,7 @@ module.exports = require("path");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("perf_hooks");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("perf_hooks");
 
 /***/ }),
 
@@ -27872,7 +27868,7 @@ module.exports = require("perf_hooks");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("querystring");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("querystring");
 
 /***/ }),
 
@@ -27880,7 +27876,7 @@ module.exports = require("querystring");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("stream");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("stream");
 
 /***/ }),
 
@@ -27888,7 +27884,7 @@ module.exports = require("stream");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("stream/web");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("stream/web");
 
 /***/ }),
 
@@ -27896,7 +27892,7 @@ module.exports = require("stream/web");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("string_decoder");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("string_decoder");
 
 /***/ }),
 
@@ -27904,7 +27900,7 @@ module.exports = require("string_decoder");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("timers");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("timers");
 
 /***/ }),
 
@@ -27912,7 +27908,7 @@ module.exports = require("timers");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("tls");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("tls");
 
 /***/ }),
 
@@ -27920,7 +27916,7 @@ module.exports = require("tls");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("url");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("url");
 
 /***/ }),
 
@@ -27928,7 +27924,7 @@ module.exports = require("url");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("util");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("util");
 
 /***/ }),
 
@@ -27936,7 +27932,7 @@ module.exports = require("util");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("util/types");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("util/types");
 
 /***/ }),
 
@@ -27944,7 +27940,7 @@ module.exports = require("util/types");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("worker_threads");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("worker_threads");
 
 /***/ }),
 
@@ -27952,7 +27948,7 @@ module.exports = require("worker_threads");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("zlib");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("zlib");
 
 /***/ }),
 

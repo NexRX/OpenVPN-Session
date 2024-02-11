@@ -9,7 +9,7 @@ type Input = {
   'ovpn-client-b64': string | undefined
   'log-save-as': string | undefined
   'log-filepath': string
-  'timeout-ip': string
+  'timeout-address': string
   'timeout-seconds': number
 }
 
@@ -25,7 +25,13 @@ export function getInput<K extends keyof Input>(name: K): Input[K] {
       'log-filepath',
       n => core.getInput(n) || ('/tmp/openvpn.log' as Input[typeof n])
     )
-    .with('timeout-ip', n => core.getInput(n, { required: true }))
-    .with('timeout-seconds', n => parseInt(core.getInput(n) || '180', 1))
+    .with('timeout-address', n => core.getInput(n, { required: true }))
+    .with('timeout-seconds', n => parseInt(core.getInput(n) || '180'))
     .exhaustive() as Input[K]
+}
+
+export function errorToMessage(error: unknown): string {
+  if (error instanceof Error) return error.message
+  if (typeof error === 'string') return error
+  return 'Unknown Error'
 }

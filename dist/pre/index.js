@@ -1,3 +1,4 @@
+import { createRequire as __WEBPACK_EXTERNAL_createRequire } from "module";
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
@@ -25966,8 +25967,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.run = void 0;
-const pre = __importStar(__nccwpck_require__(9093));
+const core = __importStar(__nccwpck_require__(9093));
 const exec_1 = __nccwpck_require__(7775);
+const util_1 = __nccwpck_require__(8438);
 // import { getInput } from './util'
 const autoYes = ['--yes', '--force-yes'];
 /**
@@ -25975,7 +25977,7 @@ const autoYes = ['--yes', '--force-yes'];
  * @returns {Promise<void>} Resolves when the action is complete.
  */
 async function run() {
-    pre.info('Starting Pre-OpenVPN setup');
+    core.info('Starting Pre-OpenVPN setup');
     try {
         await (0, exec_1.exec)('sudo apt-get', ['update', ...autoYes]);
         await (0, exec_1.exec)('sudo apt-get', [
@@ -25984,14 +25986,68 @@ async function run() {
             '--no-install-recommends',
             ...autoYes
         ]);
-        pre.info('Pre-OpenVPN setup complete');
+        return core.info('Pre-OpenVPN setup complete');
     }
     catch (error) {
-        if (error instanceof Error)
-            pre.setFailed(error.message);
+        return core.setFailed((0, util_1.errorToMessage)(error));
     }
 }
 exports.run = run;
+
+
+/***/ }),
+
+/***/ 8438:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.errorToMessage = exports.getInput = void 0;
+const core = __importStar(__nccwpck_require__(9093));
+const ts_pattern_1 = __nccwpck_require__(4502);
+/** Returns a parsed (If needed) value of the types with the correct type */
+function getInput(name) {
+    // Use the `name` parameter directly to fetch the corresponding input
+    return (0, ts_pattern_1.match)(name)
+        .with(ts_pattern_1.P.union('ovpn-client', 'ovpn-client-b64', 'log-save-as'), n => core.getInput(n) || undefined)
+        .with('log-filepath', n => core.getInput(n) || '/tmp/openvpn.log')
+        .with('timeout-address', n => core.getInput(n, { required: true }))
+        .with('timeout-seconds', n => parseInt(core.getInput(n) || '180'))
+        .exhaustive();
+}
+exports.getInput = getInput;
+function errorToMessage(error) {
+    if (error instanceof Error)
+        return error.message;
+    if (typeof error === 'string')
+        return error;
+    return 'Unknown Error';
+}
+exports.errorToMessage = errorToMessage;
 
 
 /***/ }),
@@ -26000,7 +26056,7 @@ exports.run = run;
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("assert");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("assert");
 
 /***/ }),
 
@@ -26008,7 +26064,7 @@ module.exports = require("assert");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("async_hooks");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("async_hooks");
 
 /***/ }),
 
@@ -26016,7 +26072,7 @@ module.exports = require("async_hooks");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("buffer");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("buffer");
 
 /***/ }),
 
@@ -26024,7 +26080,7 @@ module.exports = require("buffer");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("child_process");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("child_process");
 
 /***/ }),
 
@@ -26032,7 +26088,7 @@ module.exports = require("child_process");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("console");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("console");
 
 /***/ }),
 
@@ -26040,7 +26096,7 @@ module.exports = require("console");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("crypto");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("crypto");
 
 /***/ }),
 
@@ -26048,7 +26104,7 @@ module.exports = require("crypto");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("diagnostics_channel");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("diagnostics_channel");
 
 /***/ }),
 
@@ -26056,7 +26112,7 @@ module.exports = require("diagnostics_channel");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("events");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("events");
 
 /***/ }),
 
@@ -26064,7 +26120,7 @@ module.exports = require("events");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("fs");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("fs");
 
 /***/ }),
 
@@ -26072,7 +26128,7 @@ module.exports = require("fs");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("http");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("http");
 
 /***/ }),
 
@@ -26080,7 +26136,7 @@ module.exports = require("http");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("http2");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("http2");
 
 /***/ }),
 
@@ -26088,7 +26144,7 @@ module.exports = require("http2");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("https");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("https");
 
 /***/ }),
 
@@ -26096,7 +26152,7 @@ module.exports = require("https");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("net");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("net");
 
 /***/ }),
 
@@ -26104,7 +26160,7 @@ module.exports = require("net");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("node:events");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:events");
 
 /***/ }),
 
@@ -26112,7 +26168,7 @@ module.exports = require("node:events");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("node:stream");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:stream");
 
 /***/ }),
 
@@ -26120,7 +26176,7 @@ module.exports = require("node:stream");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("node:util");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:util");
 
 /***/ }),
 
@@ -26128,7 +26184,7 @@ module.exports = require("node:util");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("os");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("os");
 
 /***/ }),
 
@@ -26136,7 +26192,7 @@ module.exports = require("os");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("path");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("path");
 
 /***/ }),
 
@@ -26144,7 +26200,7 @@ module.exports = require("path");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("perf_hooks");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("perf_hooks");
 
 /***/ }),
 
@@ -26152,7 +26208,7 @@ module.exports = require("perf_hooks");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("querystring");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("querystring");
 
 /***/ }),
 
@@ -26160,7 +26216,7 @@ module.exports = require("querystring");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("stream");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("stream");
 
 /***/ }),
 
@@ -26168,7 +26224,7 @@ module.exports = require("stream");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("stream/web");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("stream/web");
 
 /***/ }),
 
@@ -26176,7 +26232,7 @@ module.exports = require("stream/web");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("string_decoder");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("string_decoder");
 
 /***/ }),
 
@@ -26184,7 +26240,7 @@ module.exports = require("string_decoder");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("timers");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("timers");
 
 /***/ }),
 
@@ -26192,7 +26248,7 @@ module.exports = require("timers");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("tls");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("tls");
 
 /***/ }),
 
@@ -26200,7 +26256,7 @@ module.exports = require("tls");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("url");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("url");
 
 /***/ }),
 
@@ -26208,7 +26264,7 @@ module.exports = require("url");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("util");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("util");
 
 /***/ }),
 
@@ -26216,7 +26272,7 @@ module.exports = require("util");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("util/types");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("util/types");
 
 /***/ }),
 
@@ -26224,7 +26280,7 @@ module.exports = require("util/types");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("worker_threads");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("worker_threads");
 
 /***/ }),
 
@@ -26232,7 +26288,7 @@ module.exports = require("worker_threads");
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("zlib");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("zlib");
 
 /***/ }),
 
@@ -27851,6 +27907,15 @@ function parseParams (str) {
 }
 
 module.exports = parseParams
+
+
+/***/ }),
+
+/***/ 4502:
+/***/ ((__unused_webpack_module, exports) => {
+
+function n(n,t){(null==t||t>n.length)&&(t=n.length);for(var r=0,e=new Array(t);r<t;r++)e[r]=n[r];return e}function t(t,r){var e="undefined"!=typeof Symbol&&t[Symbol.iterator]||t["@@iterator"];if(e)return(e=e.call(t)).next.bind(e);if(Array.isArray(t)||(e=function(t,r){if(t){if("string"==typeof t)return n(t,r);var e=Object.prototype.toString.call(t).slice(8,-1);return"Object"===e&&t.constructor&&(e=t.constructor.name),"Map"===e||"Set"===e?Array.from(t):"Arguments"===e||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(e)?n(t,r):void 0}}(t))||r&&t&&"number"==typeof t.length){e&&(t=e);var u=0;return function(){return u>=t.length?{done:!0}:{done:!1,value:t[u++]}}}throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}var r=Symbol.for("@ts-pattern/matcher"),e=Symbol.for("@ts-pattern/isVariadic"),u="@ts-pattern/anonymous-select-key",i=function(n){return Boolean(n&&"object"==typeof n)},o=function(n){return n&&!!n[r]},c=function n(u,c,a){if(o(u)){var f=u[r]().match(c),s=f.matched,l=f.selections;return s&&l&&Object.keys(l).forEach(function(n){return a(n,l[n])}),s}if(i(u)){if(!i(c))return!1;if(Array.isArray(u)){if(!Array.isArray(c))return!1;for(var h,v=[],g=[],m=[],p=t(u.keys());!(h=p()).done;){var y=u[h.value];o(y)&&y[e]?m.push(y):m.length?g.push(y):v.push(y)}if(m.length){if(m.length>1)throw new Error("Pattern error: Using `...P.array(...)` several times in a single pattern is not allowed.");if(c.length<v.length+g.length)return!1;var d=c.slice(0,v.length),b=0===g.length?[]:c.slice(-g.length),w=c.slice(v.length,0===g.length?Infinity:-g.length);return v.every(function(t,r){return n(t,d[r],a)})&&g.every(function(t,r){return n(t,b[r],a)})&&(0===m.length||n(m[0],w,a))}return u.length===c.length&&u.every(function(t,r){return n(t,c[r],a)})}return Object.keys(u).every(function(t){var e,i=u[t];return(t in c||o(e=i)&&"optional"===e[r]().matcherType)&&n(i,c[t],a)})}return Object.is(c,u)},a=function n(t){var e,u,c;return i(t)?o(t)?null!=(e=null==(u=(c=t[r]()).getSelectionKeys)?void 0:u.call(c))?e:[]:Array.isArray(t)?f(t,n):f(Object.values(t),n):[]},f=function(n,t){return n.reduce(function(n,r){return n.concat(t(r))},[])};function s(){var n=[].slice.call(arguments);if(1===n.length){var t=n[0];return function(n){return c(t,n,function(){})}}if(2===n.length)return c(n[0],n[1],function(){});throw new Error("isMatching wasn't given the right number of arguments: expected 1 or 2, received "+n.length+".")}function l(n){return Object.assign(n,{optional:function(){return v(n)},and:function(t){return p(n,t)},or:function(t){return y(n,t)},select:function(t){return void 0===t?b(n):b(t,n)}})}function h(n){return Object.assign(function(n){var t;return Object.assign(n,((t={})[Symbol.iterator]=function(){/*#__PURE__*/return regeneratorRuntime.mark(function t(){var r;return regeneratorRuntime.wrap(function(t){for(;;)switch(t.prev=t.next){case 0:return t.next=2,Object.assign(n,((r={})[e]=!0,r));case 2:case"end":return t.stop()}},t)})()},t))}(n),{optional:function(){return h(v(n))},select:function(t){return h(void 0===t?b(n):b(t,n))}})}function v(n){var t;return l(((t={})[r]=function(){return{match:function(t){var r={},e=function(n,t){r[n]=t};return void 0===t?(a(n).forEach(function(n){return e(n,void 0)}),{matched:!0,selections:r}):{matched:c(n,t,e),selections:r}},getSelectionKeys:function(){return a(n)},matcherType:"optional"}},t))}var g=function(n,r){for(var e,u=t(n);!(e=u()).done;)if(!r(e.value))return!1;return!0},m=function(n,r){for(var e,u=t(n.entries());!(e=u()).done;){var i=e.value;if(!r(i[1],i[0]))return!1}return!0};function p(){var n,t=[].slice.call(arguments);return l(((n={})[r]=function(){return{match:function(n){var r={},e=function(n,t){r[n]=t};return{matched:t.every(function(t){return c(t,n,e)}),selections:r}},getSelectionKeys:function(){return f(t,a)},matcherType:"and"}},n))}function y(){var n,t=[].slice.call(arguments);return l(((n={})[r]=function(){return{match:function(n){var r={},e=function(n,t){r[n]=t};return f(t,a).forEach(function(n){return e(n,void 0)}),{matched:t.some(function(t){return c(t,n,e)}),selections:r}},getSelectionKeys:function(){return f(t,a)},matcherType:"or"}},n))}function d(n){var t;return(t={})[r]=function(){return{match:function(t){return{matched:Boolean(n(t))}}}},t}function b(){var n,t=[].slice.call(arguments),e="string"==typeof t[0]?t[0]:void 0,i=2===t.length?t[1]:"string"==typeof t[0]?void 0:t[0];return l(((n={})[r]=function(){return{match:function(n){var t,r=((t={})[null!=e?e:u]=n,t);return{matched:void 0===i||c(i,n,function(n,t){r[n]=t}),selections:r}},getSelectionKeys:function(){return[null!=e?e:u].concat(void 0===i?[]:a(i))}}},n))}function w(n){return"number"==typeof n}function S(n){return"string"==typeof n}function j(n){return"bigint"==typeof n}var O=l(d(function(n){return!0})),A=O,x=function n(t){return Object.assign(l(t),{startsWith:function(r){return n(p(t,(e=r,d(function(n){return S(n)&&n.startsWith(e)}))));var e},endsWith:function(r){return n(p(t,(e=r,d(function(n){return S(n)&&n.endsWith(e)}))));var e},minLength:function(r){return n(p(t,function(n){return d(function(t){return S(t)&&t.length>=n})}(r)))},maxLength:function(r){return n(p(t,function(n){return d(function(t){return S(t)&&t.length<=n})}(r)))},includes:function(r){return n(p(t,(e=r,d(function(n){return S(n)&&n.includes(e)}))));var e},regex:function(r){return n(p(t,(e=r,d(function(n){return S(n)&&Boolean(n.match(e))}))));var e}})}(d(S)),E=function n(t){return Object.assign(l(t),{between:function(r,e){return n(p(t,function(n,t){return d(function(r){return w(r)&&n<=r&&t>=r})}(r,e)))},lt:function(r){return n(p(t,function(n){return d(function(t){return w(t)&&t<n})}(r)))},gt:function(r){return n(p(t,function(n){return d(function(t){return w(t)&&t>n})}(r)))},lte:function(r){return n(p(t,function(n){return d(function(t){return w(t)&&t<=n})}(r)))},gte:function(r){return n(p(t,function(n){return d(function(t){return w(t)&&t>=n})}(r)))},int:function(){return n(p(t,d(function(n){return w(n)&&Number.isInteger(n)})))},finite:function(){return n(p(t,d(function(n){return w(n)&&Number.isFinite(n)})))},positive:function(){return n(p(t,d(function(n){return w(n)&&n>0})))},negative:function(){return n(p(t,d(function(n){return w(n)&&n<0})))}})}(d(w)),K=function n(t){return Object.assign(l(t),{between:function(r,e){return n(p(t,function(n,t){return d(function(r){return j(r)&&n<=r&&t>=r})}(r,e)))},lt:function(r){return n(p(t,function(n){return d(function(t){return j(t)&&t<n})}(r)))},gt:function(r){return n(p(t,function(n){return d(function(t){return j(t)&&t>n})}(r)))},lte:function(r){return n(p(t,function(n){return d(function(t){return j(t)&&t<=n})}(r)))},gte:function(r){return n(p(t,function(n){return d(function(t){return j(t)&&t>=n})}(r)))},positive:function(){return n(p(t,d(function(n){return j(n)&&n>0})))},negative:function(){return n(p(t,d(function(n){return j(n)&&n<0})))}})}(d(j)),T=l(d(function(n){return"boolean"==typeof n})),k=l(d(function(n){return"symbol"==typeof n})),P=l(d(function(n){return null==n})),B={__proto__:null,matcher:r,optional:v,array:function(){var n,t=[].slice.call(arguments);return h(((n={})[r]=function(){return{match:function(n){if(!Array.isArray(n))return{matched:!1};if(0===t.length)return{matched:!0};var r=t[0],e={};if(0===n.length)return a(r).forEach(function(n){e[n]=[]}),{matched:!0,selections:e};var u=function(n,t){e[n]=(e[n]||[]).concat([t])};return{matched:n.every(function(n){return c(r,n,u)}),selections:e}},getSelectionKeys:function(){return 0===t.length?[]:a(t[0])}}},n))},set:function(){var n,t=[].slice.call(arguments);return l(((n={})[r]=function(){return{match:function(n){if(!(n instanceof Set))return{matched:!1};var r={};if(0===n.size)return{matched:!0,selections:r};if(0===t.length)return{matched:!0};var e=function(n,t){r[n]=(r[n]||[]).concat([t])},u=t[0];return{matched:g(n,function(n){return c(u,n,e)}),selections:r}},getSelectionKeys:function(){return 0===t.length?[]:a(t[0])}}},n))},map:function(){var n,t=[].slice.call(arguments);return l(((n={})[r]=function(){return{match:function(n){if(!(n instanceof Map))return{matched:!1};var r={};if(0===n.size)return{matched:!0,selections:r};var e,u=function(n,t){r[n]=(r[n]||[]).concat([t])};if(0===t.length)return{matched:!0};if(1===t.length)throw new Error("`P.map` wasn't given enough arguments. Expected (key, value), received "+(null==(e=t[0])?void 0:e.toString()));var i=t[0],o=t[1];return{matched:m(n,function(n,t){var r=c(i,t,u),e=c(o,n,u);return r&&e}),selections:r}},getSelectionKeys:function(){return 0===t.length?[]:[].concat(a(t[0]),a(t[1]))}}},n))},intersection:p,union:y,not:function(n){var t;return l(((t={})[r]=function(){return{match:function(t){return{matched:!c(n,t,function(){})}},getSelectionKeys:function(){return[]},matcherType:"not"}},t))},when:d,select:b,any:O,_:A,string:x,number:E,bigint:K,boolean:T,symbol:k,nullish:P,instanceOf:function(n){return l(d(function(n){return function(t){return t instanceof n}}(n)))},shape:function(n){return l(d(s(n)))}},I={matched:!1,value:void 0},_=/*#__PURE__*/function(){function n(n,t){this.input=void 0,this.state=void 0,this.input=n,this.state=t}var t=n.prototype;return t.with=function(){var t=this,r=[].slice.call(arguments);if(this.state.matched)return this;var e=r[r.length-1],i=[r[0]],o=void 0;3===r.length&&"function"==typeof r[1]?o=r[1]:r.length>2&&i.push.apply(i,r.slice(1,r.length-1));var a=!1,f={},s=function(n,t){a=!0,f[n]=t},l=!i.some(function(n){return c(n,t.input,s)})||o&&!Boolean(o(this.input))?I:{matched:!0,value:e(a?u in f?f[u]:f:this.input,this.input)};return new n(this.input,l)},t.when=function(t,r){if(this.state.matched)return this;var e=Boolean(t(this.input));return new n(this.input,e?{matched:!0,value:r(this.input,this.input)}:I)},t.otherwise=function(n){return this.state.matched?this.state.value:n(this.input)},t.exhaustive=function(){if(this.state.matched)return this.state.value;var n;try{n=JSON.stringify(this.input)}catch(t){n=this.input}throw new Error("Pattern matching error: no pattern matches value "+n)},t.run=function(){return this.exhaustive()},t.returnType=function(){return this},n}();exports.P=B,exports.Pattern=B,exports.isMatching=s,exports.match=function(n){return new _(n,I)};
+//# sourceMappingURL=index.cjs.map
 
 
 /***/ })

@@ -1,7 +1,7 @@
 import * as core from '@actions/core'
-import * as fs from 'node:fs'
+import { existsSync } from 'fs'
 import { exec } from '@actions/exec'
-import { getInput } from './util'
+import { errorToMessage, getInput } from './util'
 import { DefaultArtifactClient } from '@actions/artifact'
 
 /**
@@ -13,11 +13,11 @@ export async function run(): Promise<void> {
   try {
     exec('sudo killall', ['openvpn'])
 
-    if (fs.existsSync(getInput('log-filepath'))) {
+    const artifactName = getInput('log-save-as')
+    if (await logExists()) {
       exec('sudo chmod', ['777', getInput('log-filepath')])
 
-      const artifactName = getInput('log-save-as')
-      if (artifactName) {
+      if (artifactName !== undefined) {
         const split = getInput('log-filepath').split('/')
         const filename = split[split.length - 1]
         const path = getInput('log-filepath').replace(filename, '')
@@ -25,12 +25,17 @@ export async function run(): Promise<void> {
         const client = new DefaultArtifactClient()
         await client.uploadArtifact(artifactName, [filename], path)
       }
-    } else if (getInput('log-save-as')) {
+    } else if (artifactName) {
       core.warning(
-        `The file ${getInput('log-filepath')} does not exist. Skipping artifact upload`
+        `Can't artifact logs because missing file ${getInput('log-filepath')}`
       )
     }
   } catch (error) {
-    if (error instanceof Error) core.setFailed(error.message)
+    core.setFailed(errorToMessage(error))
   }
+}
+
+export async function logExists(): Promise<boolean> {
+  const filepath = getInput('log-filepath')
+  return existsSync(filepath)
 }
