@@ -153,7 +153,7 @@ describe('pingUntilSuccessful', () => {
 
   it('Handles probe error', async () => {
     let mockProbe = vi.spyOn(ping, 'probe')
-    mockProbe.mockRejectedValueOnce(new Error('error'));
+    mockProbe.mockRejectedValueOnce(new Error('error'))
     const doPing = main.pingUntilSuccessful(failIp, 1)
     await expect(doPing).rejects.toThrow(`${failMessage} after ${1} seconds`)
     mockProbe.mockRestore() // THis will cause more problems if this test fails

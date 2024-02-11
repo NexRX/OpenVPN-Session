@@ -29,17 +29,18 @@
   "scripts": {
     "bundle": "pnpm run format:write && pnpm run package",
     "ci-test": "vitest",
-    "coverage": "make-coverage-badge --output-path ./badges/coverage.svg",
+    "coverage": "vitest --run && make-coverage-badge --output-path ./badges/coverage.svg",
     "format:write": "prettier --write **/*.ts",
     "format:check": "prettier --check **/*.ts",
-    "lint": "pnpm exec eslint . -c ./.github/linters/.eslintrc.yml",
+    "lint": "pnpm exec eslint",
     "package:main": "ncc build src/action/main.ts --license licenses.txt -o dist/main",
     "package:post": "ncc build src/action/post.ts --license licenses.txt -o dist/post",
     "package:pre": "ncc build src/action/pre.ts --license licenses.txt -o dist/pre",
     "package": "pnpm run package:main && pnpm run package:post && pnpm run package:pre",
     "package:watch": "pnpm run package -- --watch",
     "test": "vitest",
-    "all": "pnpm run format:write && pnpm run lint && pnpm run test && pnpm run coverage && pnpm run package"
+    "test-coverage": "vitest --run --coverage",
+    "all": "pnpm run format:write && pnpm run lint && pnpm run test-coverage && pnpm run coverage && pnpm run package"
   },
   "license": "MIT",
   "dependencies": {
@@ -63,6 +64,7 @@
     "eslint-plugin-github": "^4.10.1",
     "eslint-plugin-jsonc": "^2.13.0",
     "eslint-plugin-prettier": "^5.1.3",
+    "eslint-plugin-vitest": "^0.3.22",
     "make-coverage-badge": "^1.2.0",
     "prettier": "^3.2.5",
     "prettier-eslint": "^16.3.0",

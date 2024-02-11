@@ -7,13 +7,11 @@ let mockSetFailed = vi.spyOn(core, 'setFailed')
 
 let mockExec = vi.spyOn(exec, 'exec')
 
-
 function reset() {
   mockInfo.mockReset()
   mockSetFailed.mockReset()
 
   mockExec.mockReset()
-
 }
 
 describe('pre run', () => {
