@@ -42,7 +42,7 @@ describe('Action Main', () => {
 
   it('should finish with defaults and no log file', async () => {
     core.getInput.mockImplementation((name: string) => {
-      if (name === "log-filepath") return ""
+      if (name === 'log-filepath') return ''
       return defaultInputs(name)
     })
 
@@ -146,8 +146,8 @@ describe('Action Main', () => {
 
   it('should handle ping error + timeout', async () => {
     core.getInput.mockImplementation((name: string) => {
-        if (name === "timeout-seconds") return 4
-        return defaultInputs(name)
+      if (name === 'timeout-seconds') return 4
+      return defaultInputs(name)
     })
     ping.mockRejectedValueOnce(new Error('Timeout'))
     exec.mockReturnValue(0)
