@@ -27,7 +27,7 @@ export async function run(): Promise<void> {
       }
     } else if (artifactName) {
       core.warning(
-        `The file ${getInput('log-filepath')} does not exist. Skipping artifact upload`
+        `Can't artifact logs because missing file ${getInput('log-filepath')}`
       )
     }
   } catch (error) {
