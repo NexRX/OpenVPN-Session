@@ -29,3 +29,9 @@ export function getInput<K extends keyof Input>(name: K): Input[K] {
     .with('timeout-seconds', n => parseInt(core.getInput(n) || '180'))
     .exhaustive() as Input[K]
 }
+
+export function errorToMessage(error: unknown): string {
+  if (error instanceof Error) error.message
+  if (typeof error === 'string') return error
+  return 'Unknown Error'
+}

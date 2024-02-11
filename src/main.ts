@@ -1,8 +1,8 @@
 import * as core from '@actions/core'
 import * as b64 from 'js-base64'
-import { promises as fs } from 'fs';
+import { promises as fs } from 'fs'
 import * as ping from 'ping'
-import { getInput } from './util.js'
+import { errorToMessage, getInput } from './util.js'
 import { match } from 'ts-pattern'
 import { exec } from '@actions/exec'
 
@@ -23,12 +23,11 @@ export async function run(): Promise<void> {
       '--daemon'
     ])
 
-    await pingUntilSuccessful(
-      getInput('timeout-address'),
-      getInput('timeout-seconds')
-    )
+    const addr = getInput('timeout-address')
+    const timeout = getInput('timeout-seconds')
+    await pingUntilSuccessful(addr, timeout)
   } catch (error) {
-    if (error instanceof Error) core.setFailed(error.message)
+    core.setFailed(errorToMessage(error))
   }
 }
 
@@ -54,13 +53,7 @@ export async function getClientPath(): Promise<string> {
       await fs.mkdir(path, { recursive: true })
       await fs.writeFile(filepath, client, { flag: 'w+', encoding: 'utf8' })
     } catch (error) {
-      const msg = match(typeof error)
-        .with('string', () => error)
-        .with('object', () => {
-          const err = error as Record<string, string>
-          return 'message' in err ? err.message : 'Unknown error'
-        })
-        .otherwise(v => `Unknown error (${v})`)
+      const msg = errorToMessage(error)
 
       throw new Error(
         `Error during write for OpenVPN client from Base64: ${msg}`
