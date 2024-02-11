@@ -26,6 +26,6 @@ export function getInput<K extends keyof Input>(name: K): Input[K] {
       n => core.getInput(n) || ('/tmp/openvpn.log' as Input[typeof n])
     )
     .with('timeout-ip', n => core.getInput(n, { required: true }))
-    .with('timeout-seconds', n => parseInt(core.getInput(n) || '180', 1))
+    .with('timeout-seconds', n => parseInt(core.getInput(n) || '180'))
     .exhaustive() as Input[K]
 }
