@@ -40,6 +40,7 @@ function FsMocks() {
       writeFile: vi.fn(),
       mkdir: vi.fn()
     },
+    existsSync: vi.fn(),
     mkdir: vi.fn(),
     stat: undefined
   }

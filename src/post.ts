@@ -11,7 +11,7 @@ import { DefaultArtifactClient } from '@actions/artifact'
 export async function run(): Promise<void> {
   core.info('Beginning post OpenVPN cleanup')
   try {
-    exec('sudo killall', ['openvpn'])
+    await exec('sudo killall', ['openvpn'])
 
     const artifactName = getInput('log-save-as')
     if (await logExists()) {

@@ -10,13 +10,26 @@ import * as main from '../src/main'
 import * as b64 from 'js-base64'
 import { defaultInputs } from './utils.test'
 
-const fs = setupFsMock()
-const exec = setupExecMock().exec
-const core = setupCoreMock()
-const ping = setupPingMock().probe
-
 describe('Action Main', () => {
+  let fs: ReturnType<typeof setupFsMock>
+  let exec: ReturnType<typeof setupExecMock>['exec']
+  let core: ReturnType<typeof setupCoreMock>
+  let ping: ReturnType<typeof setupPingMock>['probe']
+
+  beforeAll(() => {
+    fs = setupFsMock()
+    exec = setupExecMock().exec
+    core = setupCoreMock()
+    ping = setupPingMock().probe
+  })
+
   beforeEach(resetAllMocks)
+
+  afterAll(() => {
+    vi.clearAllMocks()
+    vi.resetAllMocks()
+    vi.restoreAllMocks()
+  })
 
   it('should finish for inputs default', async () => {
     core.getInput.mockImplementation(defaultInputs)
