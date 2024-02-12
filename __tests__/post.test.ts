@@ -55,7 +55,7 @@ describe('Action Pre', () => {
     expect(core.info).toBeCalledTimes(1)
     expect(core.setFailed).not.toBeCalled()
   })
-  
+
   it('Should warn without log file & artifact name', async () => {
     fs.existsSync.mockResolvedValueOnce(false)
     core.getInput.mockImplementation((name: string) => {
@@ -73,5 +73,4 @@ describe('Action Pre', () => {
     await post.run()
     expect(core.setFailed).toBeCalledTimes(1)
   })
-
 })

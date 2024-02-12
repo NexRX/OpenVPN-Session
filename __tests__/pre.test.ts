@@ -1,6 +1,11 @@
-import { resetAllMocks, setupCoreMock, setupExecMock, setupFsMock, setupPingMock } from './mocking.test'
+import {
+  resetAllMocks,
+  setupCoreMock,
+  setupExecMock,
+  setupFsMock,
+  setupPingMock
+} from './mocking.test'
 import * as pre from '../src/pre'
-
 
 describe('Action Pre', () => {
   let fs: ReturnType<typeof setupFsMock>
