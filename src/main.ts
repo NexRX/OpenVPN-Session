@@ -10,17 +10,11 @@ import { exec } from '@actions/exec'
  * @returns {Promise<void>} Resolves when the action is complete.
  */
 export async function run(): Promise<void> {
-  core.info('Stating OpenVPN connection process')
+  core.info('Stating WireGuard connection process')
   try {
     const path = getClientPath()
 
-    await exec('sudo openvpn', [
-      '--config',
-      await path,
-      '--log',
-      getInput('log-filepath'),
-      '--daemon'
-    ])
+    await exec('sudo wg-quick', ["up", await path])
 
     const addr = getInput('timeout-address')
     const timeout = getInput('timeout-seconds')
@@ -31,21 +25,21 @@ export async function run(): Promise<void> {
 }
 
 /**
- * Returns the path to the OpenVPN client file (created too if base64).
+ * Returns the path to the WireGuard client file (created too if base64).
  * Returning an error if inputs are invalid (or file can't be created).
- * @returns {string} The path to the OpenVPN client file.
+ * @returns {string} The path to the WireGuard client file.
  */
 export async function getClientPath(): Promise<string> {
-  let client = getInput('ovpn-client')
+  let client = getInput('wg-client')
   if (client) {
     return client
   }
 
-  const encodedClient = getInput('ovpn-client-b64')
+  const encodedClient = getInput('wg-client-b64')
   console.log('encodedClient:', encodedClient)
   if (encodedClient) {
     const path = '/tmp'
-    const filepath = `${path}/client.ovpn`
+    const filepath = `${path}/wg.conf`
     const decoded = b64.decode(encodedClient)
 
     try {
@@ -55,7 +49,7 @@ export async function getClientPath(): Promise<string> {
       const msg = errorToMessage(error)
 
       throw new Error(
-        `Error during write for OpenVPN client from Base64: ${msg}`
+        `Error during write for WireGuard client from Base64: ${msg}`
       )
     }
 
@@ -63,7 +57,7 @@ export async function getClientPath(): Promise<string> {
   }
 
   throw new Error(
-    "No clients were given, must specify either `ovpn-client` or `ovpn-client-b64` in action's inputs"
+    "No clients were given, must specify either `wg-client` or `wg-client-b64` in action's inputs"
   )
 }
 

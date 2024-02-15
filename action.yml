@@ -1,5 +1,5 @@
-name: 'OpenVPN Session'
-description: 'Open a connection to a OpenVPN session for your GitHub Actions'
+name: 'WireGuard Session'
+description: 'Open a connection to a WireGuard session for your GitHub Actions'
 author: 'Your name or organization here'
 
 branding:
@@ -7,23 +7,23 @@ branding:
   color: 'red'
 
 inputs:
-  ovpn-client:
+  wg-client:
     type: string
-    description: Filepath to a `.ovpn` client [required or `ovpn-client-b64`]
+    description: Filepath to a `.conf` client [required or `wg-client-b64`]
     required: false
-  ovpn-client-b64:
+  wg-client-b64:
     type: string
-    description: Base64 `.ovpn` file contents [required or `ovpn-client`]
+    description: Base64 `.conf` file contents [required or `wg-client`]
     required: false
   log-save-as:
     type: string
-    description: Specifiy a name to save the OpenVPN logs as an artifact
+    description: Specifiy a name to save the WireGuard logs as an artifact
     required: false
   log-filepath:
     type: string
-    description: Filepath for saving the OpenVPN logs to
+    description: Filepath for saving the WireGuard logs to
     required: false
-    default: '/tmp/openvpn.log'
+    default: '/tmp/wg.log'
   timeout-address:
     type: string
     description: The (private) hostname or ip for timeout testing connection to
@@ -37,7 +37,7 @@ inputs:
 # outputs:
 #   pid:
 #     type: string
-#     description: The process ID of the OpenVPN client running the session
+#     description: The process ID of the WireGuard client running the session
 
 runs:
   using: node20

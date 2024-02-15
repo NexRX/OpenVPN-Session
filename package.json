@@ -1,6 +1,6 @@
 {
-  "name": "typescript-action",
-  "description": "GitHub Actions TypeScript template",
+  "name": "wireguard-session",
+  "description": "WireGuard Sessions for GitHub Actions",
   "version": "0.0.0",
   "author": "",
   "private": true,
