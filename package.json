@@ -50,7 +50,7 @@
     "mock-fs": "^5.2.0",
     "ping": "^0.4.4",
     "ping-wrapper": "^0.0.3",
-    "ts-pattern": "^5.0.6"
+    "ts-pattern": "^5.0.8"
   },
   "devDependencies": {
     "@types/node": "^20.11.17",
