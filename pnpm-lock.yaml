@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@actions/artifact':
-    specifier: ^2.1.1
-    version: 2.1.1
+    specifier: ^2.1.4
+    version: 2.1.4
   '@actions/core':
     specifier: ^1.10.1
     version: 1.10.1
@@ -90,12 +90,12 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
-  /@actions/artifact@2.1.1:
-    resolution: {integrity: sha512-xVVwWhrRb4YLiTeYkNxctv9IhwIKUsLwIhqD9CKknXtQaqIksq5HttFN8wXQvMrpjQO4zGJf5xLUs6mKyfN4yQ==}
+  /@actions/artifact@2.1.4:
+    resolution: {integrity: sha512-nKgNduFA02drKt4rFqXsF6PjWmfKdxZDuWWdenoI1bBzgys3y8O7kw4gAS+gvLOT3EfsyV+mwTIisuXBjwQ3RA==}
     dependencies:
       '@actions/core': 1.10.1
       '@actions/github': 5.1.1
-      '@actions/http-client': 2.2.0
+      '@actions/http-client': 2.2.1
       '@azure/storage-blob': 12.17.0
       '@octokit/core': 3.6.0
       '@octokit/plugin-request-log': 1.0.4(@octokit/core@3.6.0)
@@ -128,7 +128,7 @@ packages:
   /@actions/github@5.1.1:
     resolution: {integrity: sha512-Nk59rMDoJaV+mHCOJPXuvB1zIbomlKS0dmSIqPGxd0enAXBnOfn4VWF+CGtRCwXZG9Epa54tZA7VIRlJDS8A6g==}
     dependencies:
-      '@actions/http-client': 2.2.0
+      '@actions/http-client': 2.2.1
       '@octokit/core': 3.6.0
       '@octokit/plugin-paginate-rest': 2.21.3(@octokit/core@3.6.0)
       '@octokit/plugin-rest-endpoint-methods': 5.16.2(@octokit/core@3.6.0)
@@ -138,6 +138,13 @@ packages:
 
   /@actions/http-client@2.2.0:
     resolution: {integrity: sha512-q+epW0trjVUUHboliPb4UF9g2msf+w61b32tAkFEwL/IwP0DQWgbCMM0Hbe3e3WXSKz5VcUXbzJQgy8Hkra/Lg==}
+    dependencies:
+      tunnel: 0.0.6
+      undici: 5.28.3
+    dev: false
+
+  /@actions/http-client@2.2.1:
+    resolution: {integrity: sha512-KhC/cZsq7f8I4LfZSJKgCvEwfkE8o1538VoBeoGzokVLLnbFDEAdFD3UhoMklxo2un9NJVBdANOresx7vTHlHw==}
     dependencies:
       tunnel: 0.0.6
       undici: 5.28.3
@@ -221,7 +228,7 @@ packages:
     resolution: {integrity: sha512-KxDlhXyMlh2Jhj2ykX6vNEU0Vou4nHr025KoSEiz7cS3BNiHNaZcdECk/DmLkEB0as5T7b/TpRcehJ5yV6NeXQ==}
     engines: {node: '>=12.0.0'}
     dependencies:
-      '@opentelemetry/api': 1.7.0
+      '@opentelemetry/api': 1.8.0
       tslib: 2.6.2
     dev: false
 
@@ -698,8 +705,8 @@ packages:
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     dev: true
 
-  /@fastify/busboy@2.1.0:
-    resolution: {integrity: sha512-+KpH+QxZU7O4675t3mnkQKcZZg56u+K/Ct2K+N2AZYNVK8kyeo/bI18tI8aPm3tvNNRyTWfj6s5tnGNlcbQRsA==}
+  /@fastify/busboy@2.1.1:
+    resolution: {integrity: sha512-vBZP4NlzfOlerQTnba4aqZoMhE/a9HY7HRqoOPaETQcSQuWEIyZMHGfVu6w9wGtGK5fED5qRs2DteVCjOH60sA==}
     engines: {node: '>=14'}
     dev: false
 
@@ -832,8 +839,8 @@ packages:
     resolution: {integrity: sha512-VsXyi8peyRq9PqIz/tpqiL2w3w80OgVMwBHltTml3LmVvXiphgeqmY9mvBw9Wu7e0QWk/fqD37ux8yP5uVekyQ==}
     dev: false
 
-  /@octokit/openapi-types@19.1.0:
-    resolution: {integrity: sha512-6G+ywGClliGQwRsjvqVYpklIfa7oRPA0vyhPQG/1Feh+B+wU0vGH1JiJ5T25d3g1JZYBHzR2qefLi9x8Gt+cpw==}
+  /@octokit/openapi-types@20.0.0:
+    resolution: {integrity: sha512-EtqRBEjp1dL/15V7WiX5LJMIxxkdiGJnabzYx5Apx4FkQIFgAfKumXeYAqqJCj1s+BMX4cPFIFC4OLCR6stlnA==}
     dev: false
 
   /@octokit/plugin-paginate-rest@2.21.3(@octokit/core@3.6.0):
@@ -882,7 +889,7 @@ packages:
     resolution: {integrity: sha512-X7pnyTMV7MgtGmiXBwmO6M5kIPrntOXdyKZLigNfQWSEQzVxR4a4vo49vJjTWX70mPndj8KhfT4Dx+2Ng3vnBQ==}
     engines: {node: '>= 18'}
     dependencies:
-      '@octokit/types': 12.4.0
+      '@octokit/types': 12.6.0
       deprecation: 2.3.1
       once: 1.4.0
     dev: false
@@ -900,10 +907,10 @@ packages:
       - encoding
     dev: false
 
-  /@octokit/types@12.4.0:
-    resolution: {integrity: sha512-FLWs/AvZllw/AGVs+nJ+ELCDZZJk+kY0zMen118xhL2zD0s1etIUHm1odgjP7epxYU1ln7SZxEUWYop5bhsdgQ==}
+  /@octokit/types@12.6.0:
+    resolution: {integrity: sha512-1rhSOfRa6H9w4YwK0yrf5faDaDTb+yLyBUKOCV4xtCDB5VmIPqd/v9yr9o6SAzOAlRxMiRiCic6JVM1/kunVkw==}
     dependencies:
-      '@octokit/openapi-types': 19.1.0
+      '@octokit/openapi-types': 20.0.0
     dev: false
 
   /@octokit/types@6.41.0:
@@ -912,8 +919,8 @@ packages:
       '@octokit/openapi-types': 12.11.0
     dev: false
 
-  /@opentelemetry/api@1.7.0:
-    resolution: {integrity: sha512-AdY5wvN0P2vXBi3b29hxZgSFvdhdxPB9+f0B6s//P9Q8nibRWeA3cHm8UmLpio9ABigkVHJ5NMPk+Mz8VCCyrw==}
+  /@opentelemetry/api@1.8.0:
+    resolution: {integrity: sha512-I/s6F7yKUDdtMsoBWXJe8Qz40Tui5vsuKCWJEWVL+5q9sSWRzzx6v2KeNsOBEwd94j0eWkpWCH4yB6rZg9Mf0w==}
     engines: {node: '>=8.0.0'}
     dev: false
 
@@ -4175,7 +4182,7 @@ packages:
     resolution: {integrity: sha512-3ItfzbrhDlINjaP0duwnNsKpDQk3acHI3gVJ1z4fmwMK31k5G9OVIAMLSIaP6w4FaGkaAkN6zaQO9LUvZ1t7VA==}
     engines: {node: '>=14.0'}
     dependencies:
-      '@fastify/busboy': 2.1.0
+      '@fastify/busboy': 2.1.1
     dev: false
 
   /universal-user-agent@6.0.1:
