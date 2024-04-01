@@ -27,8 +27,8 @@ dependencies:
     specifier: ^0.0.3
     version: 0.0.3
   ts-pattern:
-    specifier: ^5.0.6
-    version: 5.0.6
+    specifier: ^5.1.0
+    version: 5.1.0
 
 devDependencies:
   '@types/node':
@@ -4269,8 +4269,8 @@ packages:
       typescript: 5.4.2
     dev: true
 
-  /ts-pattern@5.0.6:
-    resolution: {integrity: sha512-Y+jOjihlFriWzcBjncPCf2/am+Hgz7LtsWs77pWg5vQQKLQj07oNrJryo/wK2G0ndNaoVn2ownFMeoeAuReu3Q==}
+  /ts-pattern@5.1.0:
+    resolution: {integrity: sha512-sULbgZDTXrcr6WMeuR8gPb+dvNN/fNpxE8GHfosFHPJRPuxHVNtGcEiiNuQa6nxu40/dY6xYdTJmc7MG3w8B5g==}
     dev: false
 
   /ts-poet@4.15.0:
